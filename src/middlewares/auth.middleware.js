@@ -1,33 +1,26 @@
-const authService = require('../services/auth.service');
+const { verifyToken } = require("../services/auth.service");
 
-const authenticate = (req, res, next) => {
-  const token = req.headers.authorization?.split(' ')[1];
+exports.authMiddleware = (req, res, next) => {
+  const authHeader = req.headers.authorization;
 
-  if (!token) {
-    return res.status(401).json({ error: 'Unauthorized' });
+  if (!authHeader) {
+    return res.status(401).json({ message: "No token provided" });
   }
 
-  const decoded = authService.verifyToken(token);
+  const token = authHeader.split(" ")[1];
+  const decoded = verifyToken(token);
+
   if (!decoded) {
-    return res.status(401).json({ error: 'Unauthorized' });
+    return res.status(401).json({ message: "Invalid token" });
   }
 
-  req.user = decoded;
+  req.user = decoded; // { userId, role }
   next();
 };
 
-const authorize = (roles = []) => {
-  return (req, res, next) => {
-    if (!req.user) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    if (!roles.includes(req.user.role)) {
-      return res.status(403).json({ error: 'Forbidden' });
-    }
-
-    next();
-  };
+exports.adminOnly = (req, res, next) => {
+  if (req.user.role !== "ADMIN") {
+    return res.status(403).json({ message: "Admin only" });
+  }
+  next();
 };
-
-module.exports = { authenticate, authorize };

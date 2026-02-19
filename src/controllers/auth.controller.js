@@ -14,14 +14,20 @@ exports.register = async (req, res) => {
         email,
         password: hashedPassword,
         tel,
-        role: "user", 
+        role: "USER", // ใช้ตัวใหญ่ให้ตรงกัน
       },
     });
 
     res.json({
       status: "success",
       message: "Register successfully",
-      user,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        tel: user.tel,
+        role: user.role,
+      },
     });
   } catch (error) {
     console.error(error);
@@ -34,7 +40,10 @@ exports.login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
     if (!user) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
@@ -44,15 +53,27 @@ exports.login = async (req, res) => {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    const token = authService.generateToken({ userId: user.id });
+    // ใส่ role ลง token ด้วย
+    const token = authService.generateToken({
+      userId: user.id,
+      role: user.role,
+    });
 
     res.json({
       status: "success",
       message: "Login successfully",
       token,
-      user,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        tel: user.tel,
+        role: user.role,
+      },
     });
+
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: error.message });
   }
 };
