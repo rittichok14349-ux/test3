@@ -10,6 +10,7 @@ const roomsRoutes = require('./routes/rooms.routes');
 const studentsRoutes = require('./routes/students.routes');
 
 
+
 const app = express();
 const PORT = process.env.PORT || 4000;
 
@@ -28,7 +29,8 @@ app.use(cors({
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 // Routes
-app.use('/auth', authRoutes);
+
+app.use("/api/auth", authRoutes);
 app.use('/members', memberRoutes);
 app.use('/rooms',roomsRoutes);
 app.use('/students',studentsRoutes);

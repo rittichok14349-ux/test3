@@ -48,27 +48,30 @@ model Member {
 //////////////////////
 // ROOM
 //////////////////////
-model Room {
-  id        Int        @id @default(autoincrement())
-  roomNo    String     @unique @map("room_no")
-  floor     Int
-  price     Float
-  roomType  String     @map("room_type")
-  status    RoomStatus @default(AVAILABLE)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  dormId    Int
-
-  dorm     Dorm      @relation(fields: [dormId], references: [id])
-  requests Request[]
-
-  @@map("rooms")
-}
 
 enum RoomStatus {
   AVAILABLE
-  OCCUPIED
-  MAINTENANCE
+  RESERVED
+  FULL
+}
+
+model Room {
+  id          Int        @id @default(autoincrement())
+  roomNo      String     @unique
+  roomType    String // คู่ชาย, คู่หญิง, รวมชาย, รวมหญิง
+  price       Float
+  status      RoomStatus @default(AVAILABLE)
+  image       String?
+  description String?
+  floor       Int
+
+  // relation
+  requests Request[]
+  dormId   Int?
+  dorm     Dorm?     @relation(fields: [dormId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Request {
