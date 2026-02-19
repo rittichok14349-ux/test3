@@ -23,6 +23,10 @@
     },
     "/rooms/": {
       "get": {
+        "tags": [
+          "Rooms"
+        ],
+        "summary": "ดึงข้อมูลห้องทั้งหมด",
         "description": "",
         "responses": {
           "200": {
@@ -34,6 +38,10 @@
         }
       },
       "post": {
+        "tags": [
+          "Rooms"
+        ],
+        "summary": "เพิ่มห้องใหม่",
         "description": "",
         "parameters": [
           {
@@ -76,6 +84,10 @@
     },
     "/rooms/{id}": {
       "get": {
+        "tags": [
+          "Rooms"
+        ],
+        "summary": "ดึงข้อมูลห้องตาม id",
         "description": "",
         "parameters": [
           {
@@ -98,6 +110,10 @@
         }
       },
       "put": {
+        "tags": [
+          "Rooms"
+        ],
+        "summary": "แก้ไขข้อมูลห้อง",
         "description": "",
         "parameters": [
           {
@@ -150,6 +166,10 @@
         }
       },
       "delete": {
+        "tags": [
+          "Rooms"
+        ],
+        "summary": "ลบนักศึกษา",
         "description": "",
         "parameters": [
           {
@@ -562,6 +582,10 @@
     },
     "/students/": {
       "get": {
+        "tags": [
+          "Students"
+        ],
+        "summary": "ดึงข้อมูลนักศึกษาทั้งหมด",
         "description": "",
         "responses": {
           "200": {
@@ -570,6 +594,10 @@
         }
       },
       "post": {
+        "tags": [
+          "Students"
+        ],
+        "summary": "เพิ่มนักศึกษาใหม่",
         "description": "",
         "parameters": [
           {
@@ -618,6 +646,10 @@
     },
     "/students/{id}": {
       "get": {
+        "tags": [
+          "Students"
+        ],
+        "summary": "ดึงข้อมูลนักศึกษาตาม id",
         "description": "",
         "parameters": [
           {
@@ -637,6 +669,10 @@
         }
       },
       "put": {
+        "tags": [
+          "Students"
+        ],
+        "summary": "แก้ไขข้อมูลนักศึกษา",
         "description": "",
         "parameters": [
           {
@@ -653,6 +689,10 @@
         }
       },
       "delete": {
+        "tags": [
+          "Students"
+        ],
+        "summary": "ลบนักศึกษา",
         "description": "",
         "parameters": [
           {

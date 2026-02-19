@@ -14,14 +14,34 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-router.get("/", controller.getAllRooms);
+router.get("/", 
+    // #swagger.tags = ['Rooms']
+    // #swagger.summary = 'ดึงข้อมูลห้องทั้งหมด'
+    controller.getAllRooms
+);
 
-router.get("/:id", controller.getRoomById);
+router.get("/:id",
+    // #swagger.tags = ['Rooms']
+    // #swagger.summary = 'ดึงข้อมูลห้องตาม id'
+    controller.getRoomById
+);
 
-router.post("/", upload.single("image"), controller.createRoom);
+router.post("/", upload.single("image"), 
+    // #swagger.tags = ['Rooms']
+    // #swagger.summary = 'เพิ่มห้องใหม่'
+    controller.createRoom
+);
 
-router.put("/:id", upload.single("image"), controller.updateRoom);
+router.put("/:id", upload.single("image"), 
+    // #swagger.tags = ['Rooms']
+    // #swagger.summary = 'แก้ไขข้อมูลห้อง'
+    controller.updateRoom
+);
 
-router.delete("/:id", controller.deleteRoom);
+router.delete("/:id", 
+    // #swagger.tags = ['Rooms']
+    // #swagger.summary = 'ลบนักศึกษา'
+    controller.deleteRoom
+);
 
 module.exports = router;
