@@ -3,15 +3,18 @@ const bcrypt = require("bcrypt");
 const authService = require("../services/auth.service");
 
 exports.register = async (req, res) => {
-  const { email, password } = req.body;
+  const { name, email, password, tel } = req.body;
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
       data: {
+        name,
         email,
         password: hashedPassword,
+        tel,
+        role: "user", 
       },
     });
 
@@ -21,9 +24,11 @@ exports.register = async (req, res) => {
       user,
     });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: error.message });
   }
 };
+
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;
