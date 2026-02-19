@@ -1,20 +1,27 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const roomController = require('../controllers/rooms.controller');
+const controller = require("../controllers/rooms.controller");
 const multer = require("multer");
-// GET
-router.get('/', roomController.getAllRooms);
-router.get('/:id', roomController.getRoomById);
 
-// POST
-router.post('/', roomController.createRoom);
-router.post("/rooms", upload.single("image"), roomController.createRoom);
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
 
+const upload = multer({ storage });
 
-// PUT
-router.put('/:id', roomController.updateRoom);
+router.get("/", controller.getAllRooms);
 
-// DELETE
-router.delete('/:id', roomController.deleteRoom);
+router.get("/:id", controller.getRoomById);
+
+router.post("/", upload.single("image"), controller.createRoom);
+
+router.put("/:id", upload.single("image"), controller.updateRoom);
+
+router.delete("/:id", controller.deleteRoom);
 
 module.exports = router;

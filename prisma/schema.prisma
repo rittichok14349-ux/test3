@@ -7,9 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-//////////////////////
-// USER / AUTH
-//////////////////////
 model User{
   id        Int      @id @default(autoincrement())
   name      String
@@ -19,7 +16,7 @@ model User{
   role      String   // e.g., "admin", "user"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   requests Request[]
 
   @@map("users")
@@ -31,9 +28,6 @@ enum Role {
   TENANT
 }
 
-//////////////////////
-// MEMBER (ของเดิม)
-//////////////////////
 model Member {
   id        Int      @id @default(autoincrement())
   firstName String   @map("first_name")
@@ -46,10 +40,6 @@ model Member {
 
   @@map("members")
 }
-
-//////////////////////
-// ROOM
-//////////////////////
 
 enum RoomStatus {
   AVAILABLE
@@ -67,7 +57,6 @@ model Room {
   description String?
   floor       Int
 
-  // relation
   requests Request[]
   dormId   Int?
   dorm     Dorm?     @relation(fields: [dormId], references: [id])
@@ -101,9 +90,6 @@ enum RequestStatus {
   CANCELLED
 }
 
-//////////////////////
-// DORM
-//////////////////////
 model Dorm {
   id          Int     @id @default(autoincrement())
   name        String
@@ -120,9 +106,6 @@ model Dorm {
   @@map("dorms")
 }
 
-//////////////////////
-// STUDENT
-//////////////////////
 model Student {
   id          Int     @id @default(autoincrement())
   studentCode String  @unique @map("student_code")
