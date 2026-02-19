@@ -3,13 +3,12 @@ const prisma = require("../prisma");
 exports.getAllRooms = async (req, res) => {
   try {
     const rooms = await prisma.room.findMany({
-      orderBy: { id: "desc" },
-      include: { dorm: true },
+      orderBy: { id: "desc" }
     });
 
-    res.json({ data: rooms });
+    res.json(rooms); // ต้องส่ง array ตรง
   } catch (error) {
-    console.error(error);
+    console.error("GET ROOMS ERROR:", error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -19,29 +18,23 @@ exports.getRoomById = async (req, res) => {
     const { id } = req.params;
 
     const room = await prisma.room.findUnique({
-      where: { id: Number(id) },
-      include: {
-        dorm: true,
-        requests: true,
-      },
+      where: { id: Number(id) }
     });
 
     if (!room) {
       return res.status(404).json({ message: "ไม่พบห้อง" });
     }
 
-    res.json({ data: room });
+    res.json(room);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: error.message });
   }
 };
+
 exports.createRoom = async (req, res) => {
   try {
-    console.log("BODY:", req.body);
-    console.log("FILE:", req.file);
-
-    const { roomNo, roomType, price, floor, description, status, dormId } = req.body || {};
+    const { roomNo, roomType, price, floor, description, status, dormId } = req.body;
 
     if (!roomNo || !roomType || !price || !floor || !dormId) {
       return res.status(400).json({ message: "กรุณากรอกข้อมูลให้ครบ" });
@@ -65,7 +58,6 @@ exports.createRoom = async (req, res) => {
     });
 
     res.json({ message: "เพิ่มห้องสำเร็จ", data: room });
-
   } catch (error) {
     console.error("CREATE ROOM ERROR:", error);
 
@@ -81,13 +73,10 @@ exports.createRoom = async (req, res) => {
   }
 };
 
-
-
 exports.updateRoom = async (req, res) => {
   try {
     const { id } = req.params;
-    const { roomNo, roomType, price, floor, description, status } =
-      req.body || {};
+    const { roomNo, roomType, price, floor, description, status } = req.body;
 
     const existing = await prisma.room.findUnique({
       where: { id: Number(id) },
@@ -98,9 +87,7 @@ exports.updateRoom = async (req, res) => {
     }
 
     let image = existing.image;
-    if (req.file) {
-      image = req.file.filename;
-    }
+    if (req.file) image = req.file.filename;
 
     const room = await prisma.room.update({
       where: { id: Number(id) },
