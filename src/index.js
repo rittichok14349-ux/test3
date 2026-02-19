@@ -7,14 +7,11 @@ const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const PORT = process.env.PORT || 3000;
-const guideRoute = require('./routes/guide.route');
-const touristRoute = require('./routes/tourist.route');
-const provinceRoute = require('./routes/province.route');
-const tripRoute = require('./routes/trip.route');
-const bookingRoute = require('./routes/booking.route');
-const authRoutes = require('./routes/auth.route');
-const adminRoutes = require('./routes/admin.route');
-const contactRoutes = require('./routes/contact.routes');
+const authRoutes = require('./routes/auth.routes');
+const memberRoutes = require('./routes/member.routes');
+const roomsRoutes = require('./routes/rooms.routes');
+const studentsRoutes = require('./routes/students.routes');
+const userRoutes = require('./routes/user.routes');
 
 
 app.use('/images', express.static(path.join(__dirname, '../images')));
@@ -24,14 +21,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
-app.use('/api/auth', authRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/guides', guideRoute);
-app.use('/api/tourists', touristRoute);
-app.use('/api/provinces', provinceRoute);
-app.use('/api/trips', tripRoute);
-app.use('/api/bookings', bookingRoute);
-app.use('/api/contact', contactRoutes);
+app.use('/auth', authRoutes);
+app.use('/members', memberRoutes);
+app.use('/rooms', roomsRoutes);
+app.use('/students', studentsRoutes);
+app.use('/users', userRoutes);
 
 app.get("/", (req, res) => {
   res.json({
