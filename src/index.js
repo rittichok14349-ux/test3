@@ -1,71 +1,45 @@
-require('dotenv').config(); 
+require('dotenv').config();
 const express = require('express');
-const cors = require('cors');
-const authRoutes = require('./routes/auth.routes');
+const path = require('path');
 const swaggerUi = require('swagger-ui-express');
 const swaggerFile = require('../swagger-output.json');
-const memberRoutes = require('./routes/member.routes');
-//const errorMiddleware = require('./middlewares/error.middleware');//
-const roomsRoutes = require('./routes/rooms.routes');
-const studentsRoutes = require('./routes/students.routes');
-
-
-
 const app = express();
-const PORT = process.env.PORT || 4000;
-const roomRoutes = require("./routes/rooms.routes");
-app.use("/rooms", roomRoutes);
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const PORT = process.env.PORT || 3000;
+const guideRoute = require('./routes/guide.route');
+const touristRoute = require('./routes/tourist.route');
+const provinceRoute = require('./routes/province.route');
+const tripRoute = require('./routes/trip.route');
+const bookingRoute = require('./routes/booking.route');
+const authRoutes = require('./routes/auth.route');
+const adminRoutes = require('./routes/admin.route');
+const contactRoutes = require('./routes/contact.routes');
 
-// Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
+app.use('/images', express.static(path.join(__dirname, '../images')));
+app.use(bodyParser.json());
+app.use(cors());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-// CORS configuration
-app.use(cors({
-  origin: ['http://localhost:4000', 'http://localhost:5175', ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true
-}));
-
-// Swagger UI
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
-// Routes
-app.use("/api/auth", authRoutes);
-app.use('/members', memberRoutes);
-app.use('/rooms',roomsRoutes);
-app.use('/students',studentsRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/guides', guideRoute);
+app.use('/api/tourists', touristRoute);
+app.use('/api/provinces', provinceRoute);
+app.use('/api/trips', tripRoute);
+app.use('/api/bookings', bookingRoute);
+app.use('/api/contact', contactRoutes);
 
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
   res.json({
-    message: 'Member Management API',
-    version: '1.0.0',
-    endpoints: {
-      documentation: `http://localhost:${PORT}/api-docs`,
-      members: `http://localhost:${PORT}/members`,
-      rooms: `http://localhost:${PORT}/rooms`,
-      students: `http://localhost:${PORT}/students`
-    }
+    message: "Welcome to the Room Booking API",
+    docs: "/api-docs"
   });
 });
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({
-    status: 'error',
-    message: 'ไม่พบเส้นทาง API ที่ร้องขอ'
-  });
-});
-
-// Start server
 app.listen(PORT, () => {
-  console.log('='.repeat(50));
-  console.log(`🚀 Server: http://localhost:${PORT}`);
-  console.log(`📚 API Docs: http://localhost:${PORT}/api-docs`);
-  console.log(`👥 Members API: http://localhost:${PORT}/members`);
-console.log(`🏠 Rooms API: http://localhost:${PORT}/rooms`);
-console.log(`🎓 Students API: http://localhost:${PORT}/students`);
-
-  console.log('='.repeat(50));
+  console.log(`Server running on port ${PORT}`);
 });
