@@ -19,10 +19,7 @@ model User{
   role      String   // e.g., "admin", "user"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  bookings  Booking[]
-
-
+  
   requests Request[]
 
   @@map("users")
