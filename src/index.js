@@ -24,7 +24,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 app.use('/auth', authRoutes);
 app.use('/members', memberRoutes);
 app.use('/rooms', roomsRoutes);
-app.use('/students', studentsRoutes);
+app.use('/stud  ents', studentsRoutes);
 app.use('/users', userRoutes);
 
 app.get("/", (req, res) => {

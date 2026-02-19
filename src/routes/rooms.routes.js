@@ -2,6 +2,10 @@ const express = require("express");
 const router = express.Router();
 const controller = require("../controllers/rooms.controller");
 const multer = require("multer");
+const { PrismaClient } = require("@prisma/client");
+const auth = require("../middlewares/upload.middleware");
+
+const pisma =new PrismaClient();
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -26,7 +30,7 @@ router.get("/:id",
     controller.getRoomById
 );
 
-router.post("/", upload.single("image"), 
+router.post("/", upload.single("image"),
     // #swagger.tags = ['Rooms']
     // #swagger.summary = 'เพิ่มห้องใหม่'
     controller.createRoom
