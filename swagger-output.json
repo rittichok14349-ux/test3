@@ -417,10 +417,6 @@
     },
     "/rooms/": {
       "get": {
-        "tags": [
-          "Rooms"
-        ],
-        "summary": "ดึงข้อมูลห้องทั้งหมด",
         "description": "",
         "responses": {
           "200": {
@@ -432,10 +428,6 @@
         }
       },
       "post": {
-        "tags": [
-          "Rooms"
-        ],
-        "summary": "เพิ่มห้องใหม่",
         "description": "",
         "parameters": [
           {
@@ -458,6 +450,12 @@
                 },
                 "description": {
                   "example": "any"
+                },
+                "status": {
+                  "example": "any"
+                },
+                "dormId": {
+                  "example": "any"
                 }
               }
             }
@@ -478,10 +476,6 @@
     },
     "/rooms/{id}": {
       "get": {
-        "tags": [
-          "Rooms"
-        ],
-        "summary": "ดึงข้อมูลห้องตาม id",
         "description": "",
         "parameters": [
           {
@@ -504,10 +498,6 @@
         }
       },
       "put": {
-        "tags": [
-          "Rooms"
-        ],
-        "summary": "แก้ไขข้อมูลห้อง",
         "description": "",
         "parameters": [
           {
@@ -560,10 +550,6 @@
         }
       },
       "delete": {
-        "tags": [
-          "Rooms"
-        ],
-        "summary": "ลบนักศึกษา",
         "description": "",
         "parameters": [
           {
