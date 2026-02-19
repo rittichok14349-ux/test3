@@ -82,6 +82,7 @@ exports.createRoom = async (req, res) => {
 };
 
 
+
 exports.updateRoom = async (req, res) => {
   try {
     const { id } = req.params;

@@ -2,14 +2,18 @@ const express = require("express");
 const router = express.Router();
 const controller = require("../controllers/rooms.controller");
 const multer = require("multer");
-const { PrismaClient } = require("@prisma/client");
-const auth = require("../middlewares/upload.middleware");
+const fs = require("fs");
+const path = require("path");
 
-const pisma =new PrismaClient();
+// สร้าง uploads ถ้าไม่มี
+const uploadDir = "uploads";
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir);
+}
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/");
+    cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + "-" + file.originalname);
@@ -18,34 +22,19 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-router.get("/", 
-    // #swagger.tags = ['Rooms']
-    // #swagger.summary = 'ดึงข้อมูลห้องทั้งหมด'
-    controller.getAllRooms
-);
+// GET all rooms
+router.get("/", controller.getAllRooms);
 
-router.get("/:id",
-    // #swagger.tags = ['Rooms']
-    // #swagger.summary = 'ดึงข้อมูลห้องตาม id'
-    controller.getRoomById
-);
+// GET room by id
+router.get("/:id", controller.getRoomById);
 
-router.post("/", upload.single("image"),
-    // #swagger.tags = ['Rooms']
-    // #swagger.summary = 'เพิ่มห้องใหม่'
-    controller.createRoom
-);
+// CREATE room
+router.post("/", upload.single("image"), controller.createRoom);
 
-router.put("/:id", upload.single("image"), 
-    // #swagger.tags = ['Rooms']
-    // #swagger.summary = 'แก้ไขข้อมูลห้อง'
-    controller.updateRoom
-);
+// UPDATE room
+router.put("/:id", upload.single("image"), controller.updateRoom);
 
-router.delete("/:id", 
-    // #swagger.tags = ['Rooms']
-    // #swagger.summary = 'ลบนักศึกษา'
-    controller.deleteRoom
-);
+// DELETE room
+router.delete("/:id", controller.deleteRoom);
 
 module.exports = router;
