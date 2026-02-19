@@ -1,24 +1,19 @@
-const { verifyToken } = require('../utils/jwt');
+const authService = require('../services/auth.service');
 
-module.exports = (roles = []) => {
-  return (req, res, next) => {
-    try {
-      const authHeader = req.headers.authorization;
-      if (!authHeader) {
-        return res.status(401).json({ message: 'ไม่ได้ส่ง token มา' });
-      }
+const authenticate = (req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1]; // ดึง token จาก header
 
-      const token = authHeader.split(' ')[1];
-      const decoded = verifyToken(token);
+  if (!token) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
 
-      if (roles.length && !roles.includes(decoded.role)) {
-        return res.status(403).json({ message: 'ไม่มีสิทธิ์เข้าถึง' });
-      }
+  const decoded = authService.verifyToken(token);
+  if (!decoded) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
 
-      req.user = decoded;
-      next();
-    } catch (err) {
-      return res.status(401).json({ message: 'Token ไม่ถูกต้องหรือหมดอายุ' });
-    }
-  };
+  req.user = decoded; // เก็บข้อมูลผู้ใช้ไว้ใน req.user
+  next();
 };
+
+module.exports = { authenticate };

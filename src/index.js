@@ -1,11 +1,11 @@
-require('dotenv').config();
+require('dotenv').config(); 
 const express = require('express');
 const cors = require('cors');
+const authRoutes = require('./routes/auth.routes');
 const swaggerUi = require('swagger-ui-express');
 const swaggerFile = require('../swagger-output.json');
 const memberRoutes = require('./routes/member.routes');
 //const errorMiddleware = require('./middlewares/error.middleware');//
-const authRoutes = require('./routes/auth.routes');
 const roomsRoutes = require('./routes/rooms.routes');
 const studentsRoutes = require('./routes/students.routes');
 
@@ -13,14 +13,17 @@ const studentsRoutes = require('./routes/students.routes');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+const roomRoutes = require("./routes/rooms.routes");
+app.use("/rooms", roomRoutes);
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+
 // CORS configuration
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000'],
+  origin: ['http://localhost:4000', 'http://localhost:5175', ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
@@ -29,7 +32,6 @@ app.use(cors({
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 // Routes
-
 app.use("/api/auth", authRoutes);
 app.use('/members', memberRoutes);
 app.use('/rooms',roomsRoutes);

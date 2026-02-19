@@ -10,13 +10,18 @@ datasource db {
 //////////////////////
 // USER / AUTH
 //////////////////////
-model User {
+model User{
   id        Int      @id @default(autoincrement())
-  username  String   @unique
+  name      String
+  email     String   @unique
   password  String
-  role      Role     @default(TENANT)
+  tel       String
+  role      String   // e.g., "admin", "user"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  bookings  Booking[]
+
 
   requests Request[]
 

@@ -1,105 +1,31 @@
-const prisma = require('../prisma/client');
-
-/**
- * GET /rooms
- * ดึงห้องทั้งหมด
- */
-exports.getAllRooms = async (req, res, next) => {
+exports.createRoom = async (req, res) => {
   try {
-    const rooms = await prisma.room.findMany({
-      include: {
-        dorm: true,
-      },
-    });
-    res.json(rooms);
-  } catch (err) {
-    next(err);
-  }
-};
+    console.log("BODY:", req.body);
+    console.log("FILE:", req.file);
 
-/**
- * GET /rooms/:id
- * ดึงห้องตาม id
- */
-exports.getRoomById = async (req, res, next) => {
-  try {
-    const { id } = req.params;
+    const { roomNo, roomType, price, floor, description } = req.body || {};
 
-    const room = await prisma.room.findUnique({
-      where: { id: Number(id) },
-      include: {
-        dorm: true,
-        requests: true,
-      },
-    });
-
-    if (!room) {
-      return res.status(404).json({ message: 'ไม่พบห้อง' });
+    if (!roomNo || !roomType || !price || !floor) {
+      return res.status(400).json({ message: "กรุณากรอกข้อมูลให้ครบ" });
     }
 
-    res.json(room);
-  } catch (err) {
-    next(err);
-  }
-};
-
-/**
- * POST /rooms
- * สร้างห้องใหม่
- */
-exports.createRoom = async (req, res, next) => {
-  try {
-    const { roomNo, floor, price, roomType, dormId } = req.body;
+    const image = req.file ? req.file.filename : null;
 
     const room = await prisma.room.create({
       data: {
         roomNo,
-        floor,
-        price,
         roomType,
-        dormId,
+        price: Number(price),
+        floor: Number(floor),
+        description,
+        image,
       },
     });
 
-    res.status(201).json(room);
-  } catch (err) {
-    next(err);
-  }
-};
+    res.json({ message: "เพิ่มห้องสำเร็จ", data: room });
 
-/**
- * PUT /rooms/:id
- * แก้ไขข้อมูลห้อง
- */
-exports.updateRoom = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-
-    const room = await prisma.room.update({
-      where: { id: Number(id) },
-      data: req.body,
-    });
-
-    res.json(room);
-  } catch (err) {
-    next(err);
-  }
-};
-
-/**
- * DELETE /rooms/:id
- * ลบห้อง
- */
-exports.deleteRoom = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-
-    await prisma.room.delete({
-      where: { id: Number(id) },
-    });
-
-    res.json({ message: 'ลบห้องเรียบร้อยแล้ว' });
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
   }
 };
