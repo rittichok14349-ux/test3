@@ -1,7 +1,7 @@
 const authService = require('../services/auth.service');
 
 const authenticate = (req, res, next) => {
-  const token = req.headers.authorization?.split(' ')[1]; // ดึง token จาก header
+  const token = req.headers.authorization?.split(' ')[1];
 
   if (!token) {
     return res.status(401).json({ error: 'Unauthorized' });
@@ -12,8 +12,22 @@ const authenticate = (req, res, next) => {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  req.user = decoded; // เก็บข้อมูลผู้ใช้ไว้ใน req.user
+  req.user = decoded;
   next();
 };
 
-module.exports = { authenticate };
+const authorize = (roles = []) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+
+    next();
+  };
+};
+
+module.exports = { authenticate, authorize };

@@ -3,6 +3,7 @@ const app = express.Router();
 const controller = require('../controllers/user.controller');
 const { authenticate, authorize } = require('../middlewares/auth.middleware');
 
+
 app.get('/',
     // #swagger.tags = ['Users']
     // #swagger.description = 'Get all users.'
