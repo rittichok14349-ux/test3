@@ -3,39 +3,41 @@ const app = express.Router();
 const controller = require('../controllers/user.controller');
 const { authenticate, authorize } = require('../middlewares/auth.middleware');
 
-
+// ✅ Get all users (admin only)
 app.get('/',
-    // #swagger.tags = ['Users']
-    // #swagger.description = 'Get all users.'
-    authenticate,
-    authorize(['admin']),
-    controller.getUsers);
+  authenticate,
+  authorize(['admin']),
+  controller.getUsers
+);
 
+// ✅ Get user by id (admin only)
 app.get('/:id',
-    // #swagger.tags = ['Users']
-    // #swagger.description = 'Get user by ID.'
-    authenticate,
-    authorize(['admin']),
-    controller.getUserById);
+  authenticate,
+  authorize(['admin']),
+  controller.getUserById
+);
 
+// ⚠️ Create user (ควรเป็น admin เท่านั้น หรือเปิด public ก็ได้ตามระบบ)
+// ถ้าเป็น admin เท่านั้น แนะนำแบบนี้:
 app.post('/',
-    // #swagger.tags = ['Users']
-    // #swagger.description = 'Create a new user.'
-    authenticate,
-    controller.createUser);
+  authenticate,
+  authorize(['admin']),
+  controller.createUser
+);
 
+// ✅ Update user by admin
 app.put('/:id',
-    // #swagger.tags = ['Users']
-    // #swagger.description = 'Update user by ID.'
-    authenticate,
-    authorize(['admin']),
-    controller.adminUpdateUser);
+  authenticate,
+  authorize(['admin']),
+  controller.adminUpdateUser
+);
+
+// ✅ Delete user (admin only)
 
 app.delete('/:id',
-    // #swagger.tags = ['Users']  
-    // #swagger.description = 'Delete user by ID.'
-    authenticate,
-    controller.deleteUser);
-
+  authenticate,
+  authorize(['admin']),
+  controller.deleteUser
+);
 
 module.exports = app;

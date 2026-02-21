@@ -66,7 +66,7 @@ exports.createRoom = async (req, res) => {
     }
 
     if (error.code === "P2003") {
-      return res.status(400).json({ message: "dormId ไม่มีอยู่ในระบบ" });
+      return res.status(400).json({ message: "อาคารนี้ ไม่มีอยู่ในระบบ" });
     }
 
     res.status(500).json({ message: error.message });

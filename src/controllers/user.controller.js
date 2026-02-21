@@ -3,211 +3,196 @@ const multer = require('multer');
 const bcrypt = require("bcrypt");
 
 const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'images/');
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix + '.' + file.originalname.split('.').pop());
-    }
+  destination: function (req, file, cb) {
+    cb(null, 'images/');
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + '.' + file.originalname.split('.').pop());
+  }
 });
 
 const upload = multer({ storage: storage });
 
+
+// ================= GET ALL USERS =================
 exports.getUsers = async (req, res) => {
-    const users = await prisma.users.findMany();
+  try {
+    const users = await prisma.user.findMany();
 
-    try {
-        res.status(201).json({
-            status: 'success',
-            message: 'Users retrieved successfully',
-            data: users
-        });
+    res.status(200).json({
+      status: 'success',
+      data: users        // ✅ เอา message ออกได้ (ไม่จำเป็น)
+    });
 
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            status: 'error',
-            message: 'Internal server error'
-        });
-    }
+  } catch (error) {
+    console.error("getUsers error:", error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Internal server error'
+    });
+  }
 };
 
+
+// ================= GET USER BY ID =================
 exports.getUserById = async (req, res) => {
-    const id = parseInt(req.params.id)
-    if (!id) {
-        return res.status(400).json({
-            status: 'error',
-            message: 'Invalid user ID'
-        });
+  const id = Number(req.params.id);   // ✅ แก้ parseInt → Number
+
+  if (!Number.isInteger(id)) {        // ✅ เช็ค id ให้ถูกต้อง
+    return res.status(400).json({
+      status: 'error',
+      message: 'Invalid user ID'
+    });
+  }
+
+  try {
+    const user = await prisma.users.findUnique({
+      where: { id }
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        status: 'error',
+        message: `User with ID ${id} not found`
+      });
     }
 
-    try {
-        const userId = await prisma.users.findUnique({
-            where: { id }
-        });
+    res.status(200).json({
+      status: 'success',
+      data: user
+    });
 
-        if (!userId) {
-            return res.status(404).json({
-                status: 'error',
-                message: `User with ID : ${id} not found`
-            });
-        }
-
-        res.status(200).json({
-            status: 'success',
-            message: `Details of user ID : ${id}`,
-            data: userId
-        });
-
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            status: 'error',
-            message: 'Internal server error'
-        });
-    }
+  } catch (error) {
+    console.error("getUserById error:", error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Internal server error'
+    });
+  }
 };
 
+
+// ================= CREATE USER =================
 exports.createUser = async (req, res) => {
-    upload.single('profile')(req, res, async (err) => {
-        if (err) {
-            return res.status(400).json({
-                status: 'error',
-                message: 'Error uploading file'
-            });
-        }
-
-        const { username, email, password, role } = req.body;
-        const profile = req.file ? req.file.filename : null;
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        try {
-            const newUser = await prisma.users.create({
-                data: {
-                    username,
-                    email,
-                    profile,
-                    role,
-                    password: hashedPassword
-                }
-            });
-
-            res.status(201).json({
-                status: 'success',
-                message: 'User created successfully',
-                data: newUser
-            });
-
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({
-                status: 'error',
-                message: 'Internal server error'
-            });
-        }
-    });
-};
-
-// exports.updateUser = async (req, res) => {
-//     upload.single('profile')(req, res, async (err) => {
-//         if (err) {
-//             return res.status(400).json({ status: 'error', message: 'Error uploading file' });
-//         }
-
-//         const userId = req.user.id;
-//         const { username, password } = req.body;
-//         const profile = req.file ? req.file.filename : null;
-
-//         try {
-//             const updateData = {};
-//             if (username) updateData.username = username;
-
-//             if (password && typeof password === 'string' && password.trim().length > 0) {
-//                 const saltRounds = 10;
-//                 updateData.password = await bcrypt.hash(password, saltRounds);
-//             }
-
-//             if (profile) {
-//                 updateData.profile = profile;
-//             }
-
-//             const updatedUser = await prisma.users.update({
-//                 where: { id: userId },
-//                 data: updateData
-//             });
-
-//             const { password: _, ...userWithoutPassword } = updatedUser;
-
-//             res.status(200).json({
-//                 status: 'success',
-//                 message: 'User updated successfully',
-//                 data: userWithoutPassword
-//             });
-
-//         } catch (error) {
-//             console.error("Update Logic Error:", error);
-//             res.status(500).json({ status: 'error', message: 'Internal server error' });
-//         }
-//     });
-// };
-
-exports.deleteUser = async (req, res) => {
-    const userId = Number(req.params.id);
-
-    if (!Number.isInteger(userId)) {
-        return res.status(400).json({
-            status: 'error',
-            message: 'Invalid user ID'
-        });
+  upload.single('profile')(req, res, async (err) => {
+    if (err) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Error uploading file'
+      });
     }
 
     try {
-        await prisma.users.delete({
-            where: { id: userId }
-        });
+      const { username, email, password, role } = req.body;
 
-        res.status(200).json({
-            status: 'success',
-            message: `User with ID : ${userId} has been deleted`
+      if (!username || !email || !password) {   // ✅ เพิ่ม validation
+        return res.status(400).json({
+          status: 'error',
+          message: 'Missing required fields'
         });
+      }
+
+      const profile = req.file ? req.file.filename : null;
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      const newUser = await prisma.users.create({
+        data: {
+          username,
+          email,
+          profile,
+          role,
+          password: hashedPassword
+        }
+      });
+
+      res.status(201).json({
+        status: 'success',
+        data: newUser
+      });
 
     } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            status: 'error',
-            message: 'Internal server error'
-        });
+      console.error("createUser error:", error);
+      res.status(500).json({
+        status: 'error',
+        message: 'Internal server error'
+      });
     }
+  });
 };
 
-exports.adminUpdateUser = async (req, res) => {
-    upload.single('profile')(req, res, async (err) => {
-        if (err) return res.status(400).json({ status: 'error', message: 'Error uploading file' });
 
-        const userId = Number(req.params.id); 
-        const { username, password, role, email } = req.body;
-        const profile = req.file ? req.file.filename : null;
+// ================= DELETE USER =================
+exports.deleteUser = async (req, res) => {
+  const userId = Number(req.params.id);
 
-        try {
-            const updateData = {};
-            if (username) updateData.username = username;
-            if (email) updateData.email = email;
-            if (role) updateData.role = role;
-            if (password && password.trim().length > 0) {
-                updateData.password = await bcrypt.hash(password, 10);
-            }
-            if (profile) updateData.profile = profile;
-
-            const updatedUser = await prisma.users.update({
-                where: { id: userId },
-                data: updateData
-            });
-
-            res.status(200).json({ status: 'success', data: updatedUser });
-        } catch (error) {
-            res.status(500).json({ status: 'error', message: error.message });
-        }
+  if (!Number.isInteger(userId)) {   // ✅ เช็ค id ให้ถูกต้อง
+    return res.status(400).json({
+      status: 'error',
+      message: 'Invalid user ID'
     });
+  }
+
+  try {
+    await prisma.users.delete({
+      where: { id: userId }
+    });
+
+    res.status(200).json({
+      status: 'success',
+      message: `User with ID ${userId} has been deleted`
+    });
+
+  } catch (error) {
+    console.error("deleteUser error:", error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Internal server error'
+    });
+  }
+};
+
+
+// ================= ADMIN UPDATE USER =================
+exports.adminUpdateUser = async (req, res) => {
+  upload.single('profile')(req, res, async (err) => {
+    if (err) return res.status(400).json({ status: 'error', message: 'Error uploading file' });
+
+    const userId = Number(req.params.id);
+    const { username, password, role, email } = req.body;
+    const profile = req.file ? req.file.filename : null;
+
+    if (!Number.isInteger(userId)) {   // ✅ เพิ่ม validation id
+      return res.status(400).json({ status: 'error', message: 'Invalid user ID' });
+    }
+
+    try {
+      const updateData = {};
+
+      if (username) updateData.username = username;
+      if (email) updateData.email = email;
+      if (role) updateData.role = role;
+      if (password && password.trim().length > 0) {
+        updateData.password = await bcrypt.hash(password, 10);
+      }
+      if (profile) updateData.profile = profile;
+
+      const updatedUser = await prisma.users.update({
+        where: { id: userId },
+        data: updateData
+      });
+
+      res.status(200).json({
+        status: 'success',
+        data: updatedUser
+      });
+
+    } catch (error) {
+      console.error("adminUpdateUser error:", error);
+      res.status(500).json({
+        status: 'error',
+        message: error.message
+      });
+    }
+  });
 };

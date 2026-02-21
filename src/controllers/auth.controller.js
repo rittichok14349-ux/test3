@@ -14,7 +14,7 @@ exports.register = async (req, res) => {
         email,
         password: hashedPassword,
         tel,
-        role: "USER", // ใช้ตัวใหญ่ให้ตรงกัน
+        role: "user", // ใช้ตัวใหญ่ให้ตรงกัน
       },
     });
 
